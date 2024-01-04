@@ -20,14 +20,6 @@
             android:text="A" />
 
         <Button
-            android:id="@+id/show_map_button"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/circular_button"
-            android:text="M" />
-
-        <Button
             android:id="@+id/filter_button"
             android:layout_width="60dp"
             android:layout_height="60dp"

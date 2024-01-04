@@ -4,16 +4,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -26,7 +29,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private String longitudeColumn = "BirthCityLong";
     private float minYear = -800f; // replace with your actual min year
     private float maxYear = 1953f; // replace with your actual max year
-    private String genreFilter = null;
+    private String genre;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         this.googleMap = googleMap;
 
         googleMap.getUiSettings().setMapToolbarEnabled(false);
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.map_style));
 
         updateMap();
 
@@ -73,9 +77,61 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         updateMap();
     }
 
-    public void setGenreFilter(String genre) {
-        this.genreFilter = genre;
-        updateMap();
+    public void setGenre(String genre, int buttonId) {
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<LatLng> locations = new ArrayList<>();
+
+        String[] projection;
+        if (buttonId == R.id.button_birth_place) {
+            projection = new String[] { "BirthCityLat", "BirthCityLong" };
+        } else if (buttonId == R.id.button_pub_city) {
+            projection = new String[] { "PubCityLat", "PubCityLong" };
+        } else if (buttonId == R.id.button_imp_city) {
+            projection = new String[] { "ImpCityLat", "ImpCityLong" };
+        } else {
+            throw new IllegalArgumentException("Invalid button id: " + buttonId);
+        }
+
+        // Filter results WHERE "latitudeColumn" IS NOT NULL AND "longitudeColumn" IS NOT NULL AND "genre" = 'selectedGenre'
+        String selection = projection[0] + " IS NOT NULL AND " + projection[1] + " IS NOT NULL AND Genre = ?";
+        String[] selectionArgs = { genre };
+
+        Cursor cursor = db.query(
+                DatabaseHelper.TABLE_NAME,   // The table to query
+                projection,                   // The array of columns to return (pass null to get all)
+                selection,                    // The columns for the WHERE clause
+                selectionArgs,                // The values for the WHERE clause
+                null,                         // Don't group the rows
+                null,                         // Don't filter by row groups
+                null                          // The sort order
+        );
+
+
+        googleMap.clear();
+        // Use the data in cursor to update your map
+        if (cursor.moveToFirst()) { // if Cursor is not empty
+            do {
+                double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[0]));
+                double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[1]));
+
+
+                // Create a LatLng object with the retrieved lat and lng
+                LatLng location = new LatLng(lat, lng);
+
+                // Add a marker to the map at the retrieved location
+                googleMap.addMarker(new MarkerOptions().position(location));
+
+                // Move the camera to the retrieved location
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
     }
 
     private void updateMap() {
@@ -96,12 +152,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 longitudeColumn
         };
 
-        // TODO: Add conditions to the query based on year range and genre filter
+        // TODO: Add conditions to the query based on year range and genre
 
+
+
+        String selection = latitudeColumn + " IS NOT NULL AND " + longitudeColumn + " IS NOT NULL";
         Cursor cursor = db.query(
                 DatabaseHelper.TABLE_NAME,
                 projection,
-                null,
+                selection,
                 null,
                 null,
                 null,
@@ -114,6 +173,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             locations.add(new LatLng(lat, lng));
         }
         cursor.close();
+        db.close();
         return locations;
     }
 }

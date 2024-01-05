@@ -67,74 +67,7 @@ public class FilterFragment extends DialogFragment {
         slider.setValues(initialSliderValues);
         slider.addOnChangeListener((slider1, value, fromUser) -> mapFragment.setYearRange(slider.getValues().get(0), slider.getValues().get(1)));
 
-        /*
-        buttonBirthPlace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Set the filters
-                mapFragment.setFilters("BirthCityLat", "BirthCityLong");
-
-                // Get the selected genre from the radio group
-                RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-
-                // Check if a radio button is selected
-                if (selectedId != -1) {
-                    RadioButton radioButton = view.findViewById(selectedId);
-                    String genre = radioButton.getText().toString();
-
-                    // Update the map based on the selected genre and button
-                    mapFragment.setGenre(genre, R.id.button_birth_place);
-                }
-            }
-        });
-
-        buttonPubCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Set the filters
-                mapFragment.setFilters("PubCityLat", "PubCityLong");
-
-                // Get the selected genre from the radio group
-                RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-
-                // Check if a radio button is selected
-                if (selectedId != -1) {
-                    RadioButton radioButton = view.findViewById(selectedId);
-                    String genre = radioButton.getText().toString();
-
-                    // Update the map based on the selected genre and button
-                    mapFragment.setGenre(genre, R.id.button_pub_city);
-                }
-            }
-        });
-
-        buttonImpCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Set the filters
-                mapFragment.setFilters("ImpCityLat", "ImpCityLong");
-
-                // Get the selected genre from the radio group
-                RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-
-                // Check if a radio button is selected
-                if (selectedId != -1) {
-                    RadioButton radioButton = view.findViewById(selectedId);
-                    String genre = radioButton.getText().toString();
-
-                    // Update the map based on the selected genre and button
-                    mapFragment.setGenre(genre, R.id.button_imp_city);
-                }
-            }
-        });
-
-         */
-
-        // Variable to store the ID of the last clicked button
-
+        
 // Set onClickListeners for your buttons
         buttonImpCity.setOnClickListener(new View.OnClickListener() {
             @Override

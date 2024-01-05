@@ -1,14 +1,29 @@
 package com.example.geobooks2;
 
+import android.Manifest;
+import android.location.Location;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,15 +37,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap googleMap;
+    private ActivityResultLauncher<String[]> locationPermissionRequest;
+    private boolean isMapCentered = false;
+
     private String latitudeColumn = "BirthCityLat";
     private String longitudeColumn = "BirthCityLong";
     private float minYear = -800f; // replace with your actual min year
     private float maxYear = 1953f; // replace with your actual max year
+
     private String genre;
 
+
+    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -40,12 +62,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+        // initialize location permission request
+        locationPermissionRequest = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+            Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+            Boolean coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
+            if ((fineLocationGranted != null && fineLocationGranted) || (coarseLocationGranted != null && coarseLocationGranted)) {
+                if (googleMap != null) {
+                    googleMap.setMyLocationEnabled(true);
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                }
+            } else {
+                Toast.makeText(getContext(), "Location cannot be obtained due to missing permission.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+
         return view;
     }
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+
+        // get permission to access user location
+        String[] PERMISSIONS = {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        locationPermissionRequest.launch(PERMISSIONS);
+
+
 
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.map_style));
@@ -63,6 +110,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 return false;
             }
         });
+
+        // Add this code to center the map on the user's location when the permission is granted
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations, this can be null.
+                            if (location != null && !isMapCentered) {
+                                // Logic to handle location object
+                                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+                                isMapCentered = true;
+                            }
+                        }
+                    });
+        }
     }
 
     public void setFilters(String latitudeColumn, String longitudeColumn) {
@@ -124,8 +192,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 // Add a marker to the map at the retrieved location
                 googleMap.addMarker(new MarkerOptions().position(location));
 
+                /*
                 // Move the camera to the retrieved location
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
+                 */
 
             } while (cursor.moveToNext());
         }
@@ -151,8 +222,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 latitudeColumn,
                 longitudeColumn
         };
-
-        // TODO: Add conditions to the query based on year range and genre
 
 
 

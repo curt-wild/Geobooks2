@@ -1,6 +1,9 @@
 package com.example.geobooks2;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +24,7 @@ import java.util.List;
 
 public class FilterFragment extends DialogFragment {
     private MapFragment mapFragment;
-    private int lastClickedButtonId;
+    private int lastClickedButtonId = -1;
 
     public interface OnGenreSelectedListener {
         void onGenreSelected(String genre);
@@ -54,7 +57,22 @@ public class FilterFragment extends DialogFragment {
         Button buttonImpCity = view.findViewById(R.id.button_imp_city);
 
         RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
+        RadioButton radioButtonDefault = view.findViewById(R.id.radioButtonDefault);
+        //This is clicked when the app starts
+        radioButtonDefault.performClick();
 
+        // If a button was clicked, set its color
+        if (lastClickedButtonId != -1) {
+            Button lastClickedButton = view.findViewById(lastClickedButtonId);
+            lastClickedButton.setBackgroundColor(Color.parseColor("#ff0000"));
+        }
+        else{
+            buttonBirthPlace.setBackgroundColor(Color.parseColor("#ff0000"));
+
+            buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
+            buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
+            lastClickedButtonId = R.id.button_birth_place;
+        }
 
         // Slider Filter
         RangeSlider slider = view.findViewById(R.id.slider);
@@ -72,8 +90,18 @@ public class FilterFragment extends DialogFragment {
         buttonImpCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonImpCity.setBackgroundColor(Color.parseColor("#ff0000"));
+
+                buttonBirthPlace.setBackgroundColor(Color.parseColor("#800080"));
+                buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
+
                 // Store the ID of the clicked button
                 lastClickedButtonId = R.id.button_imp_city;
+
+                // If defaultRadioButton is not checked, perform a click on it
+                if (!radioButtonDefault.isChecked()) {
+                    radioButtonDefault.performClick();
+                }
 
                 // Set the filters
                 mapFragment.setFilters("ImpCityLat", "ImpCityLong");
@@ -83,8 +111,18 @@ public class FilterFragment extends DialogFragment {
         buttonBirthPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonBirthPlace.setBackgroundColor(Color.parseColor("#ff0000"));
+
+                buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
+                buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
+
                 // Store the ID of the clicked button
                 lastClickedButtonId = R.id.button_birth_place;
+
+                // If defaultRadioButton is not checked, perform a click on it
+                if (!radioButtonDefault.isChecked()) {
+                    radioButtonDefault.performClick();
+                }
 
                 // Set the filters
                 mapFragment.setFilters("BirthCityLat", "BirthCityLong");
@@ -94,8 +132,18 @@ public class FilterFragment extends DialogFragment {
         buttonPubCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonPubCity.setBackgroundColor(Color.parseColor("#ff0000"));
+
+                buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
+                buttonBirthPlace.setBackgroundColor(Color.parseColor("#800080"));
+
                 // Store the ID of the clicked button
                 lastClickedButtonId = R.id.button_pub_city;
+
+                // If defaultRadioButton is not checked, perform a click on it
+                if (!radioButtonDefault.isChecked()) {
+                    radioButtonDefault.performClick();
+                }
 
                 // Set the filters
                 mapFragment.setFilters("PubCityLat", "PubCityLong");
@@ -115,7 +163,23 @@ public class FilterFragment extends DialogFragment {
             }
         });
 
+        radioButtonDefault.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                radioButtonDefault.setChecked(true);
+                // Call setFilters based on the last clicked button
+                if (lastClickedButtonId == R.id.button_birth_place) {
+                    mapFragment.setFilters("BirthCityLat", "BirthCityLong");
+                } else if (lastClickedButtonId == R.id.button_pub_city) {
+                    mapFragment.setFilters("PubCityLat", "PubCityLong");
+                } else if (lastClickedButtonId == R.id.button_imp_city) {
+                    mapFragment.setFilters("ImpCityLat", "ImpCityLong");
+                }
+            }
+        });
+
         builder.setView(view);
         return builder.create();
     }
+
 }

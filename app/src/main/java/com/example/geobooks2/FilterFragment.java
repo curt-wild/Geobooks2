@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import java.util.List;
 public class FilterFragment extends DialogFragment {
     private MapFragment mapFragment;
     private int lastClickedButtonId = -1;
+    private RadioGroup radioGroup;
 
     public interface OnGenreSelectedListener {
         void onGenreSelected(String genre);
@@ -42,6 +44,7 @@ public class FilterFragment extends DialogFragment {
         return fragment;
     }
 
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -56,10 +59,18 @@ public class FilterFragment extends DialogFragment {
         Button buttonPubCity = view.findViewById(R.id.button_pub_city);
         Button buttonImpCity = view.findViewById(R.id.button_imp_city);
 
-        RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
+        radioGroup = view.findViewById(R.id.radioGroup);
         RadioButton radioButtonDefault = view.findViewById(R.id.radioButtonDefault);
         //This is clicked when the app starts
         radioButtonDefault.performClick();
+
+
+        // Restore the selected RadioButton and Button
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        int selectedRadioButtonId = sharedPref.getInt("selectedRadioButtonId", R.id.radioButtonDefault);
+        lastClickedButtonId = sharedPref.getInt("lastClickedButtonId", R.id.button_birth_place);
+        RadioButton selectedRadioButton = view.findViewById(selectedRadioButtonId);
+        selectedRadioButton.setChecked(true);
 
         // If a button was clicked, set its color
         if (lastClickedButtonId != -1) {
@@ -73,6 +84,7 @@ public class FilterFragment extends DialogFragment {
             buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
             lastClickedButtonId = R.id.button_birth_place;
         }
+
 
         // Slider Filter
         RangeSlider slider = view.findViewById(R.id.slider);
@@ -180,6 +192,28 @@ public class FilterFragment extends DialogFragment {
 
         builder.setView(view);
         return builder.create();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Save the selected button
+        if (radioGroup != null) {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt("selectedRadioButtonId", radioGroup.getCheckedRadioButtonId());
+            editor.putInt("lastClickedButtonId", lastClickedButtonId);
+            editor.apply();
+        }
+    }
+
+    public static void clearPreferences(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear();
+        editor.apply();
     }
 
 }

@@ -43,13 +43,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap googleMap;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private boolean isMapCentered = false;
-
     private String latitudeColumn = "BirthCityLat";
     private String longitudeColumn = "BirthCityLong";
-    private float minYear = -800f; // replace with your actual min year
-    private float maxYear = 1953f; // replace with your actual max year
-
-    private String genre;
 
 
     @SuppressLint("MissingPermission")
@@ -83,7 +78,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -92,24 +86,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         String[] PERMISSIONS = {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         locationPermissionRequest.launch(PERMISSIONS);
 
-
-
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.map_style));
 
         updateMap();
 
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                LatLng position = marker.getPosition();
-                Intent intent = new Intent(getActivity(), BookListActivity.class);
-                intent.putExtra("lat", position.latitude);
-                intent.putExtra("lng", position.longitude);
-                startActivity(intent);
-                return false;
-            }
-        });
 
         // Add this code to center the map on the user's location when the permission is granted
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -137,21 +118,77 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         this.latitudeColumn = latitudeColumn;
         this.longitudeColumn = longitudeColumn;
         updateMap();
+
     }
 
-    public void setYearRange(float minYear, float maxYear) {
-        this.minYear = minYear;
-        this.maxYear = maxYear;
-        updateMap();
+
+    private void updateMap() {
+        List<LatLng> locations = fetchLocationsFromDatabase();
+        googleMap.clear();
+        for (LatLng location : locations) {
+            googleMap.addMarker(new MarkerOptions().position(location));
+        }
+        setMarkerClickListener();
     }
 
+    private List<LatLng> fetchLocationsFromDatabase() {
+        List<LatLng> locations = new ArrayList<>();
+        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                latitudeColumn,
+                longitudeColumn
+        };
+
+        // Database query: WHERE "latitudeColumn" IS NOT NULL AND "longitudeColumn" IS NOT NULL
+        String selection = latitudeColumn + " IS NOT NULL AND " + longitudeColumn + " IS NOT NULL";
+        Cursor cursor = db.query(
+                DatabaseHelper.TABLE_NAME,
+                projection,
+                selection,
+                null,
+                null,
+                null,
+                null
+        );
+
+        while(cursor.moveToNext()) {
+            double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(latitudeColumn));
+            double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(longitudeColumn));
+            locations.add(new LatLng(lat, lng));
+        }
+        cursor.close();
+        db.close();
+        return locations;
+    }
+
+    //Handle marker click events
+    private void setMarkerClickListener() {
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LatLng position = marker.getPosition();
+                //Create an intent to start the BookListActivity
+                Intent intent = new Intent(getActivity(), BookListActivity.class);
+                //Pass the lat, lng and name of the columns of the clicked marker to the BookListActivity
+                intent.putExtra("lat", position.latitude);
+                intent.putExtra("lng", position.longitude);
+                intent.putExtra("latColumn", latitudeColumn);
+                intent.putExtra("lngColumn", longitudeColumn);
+                startActivity(intent);
+                return false;
+            }
+        });
+    }
+
+    // Update the map based on the selected genre and the last clicked button
     public void setGenre(String genre, int buttonId) {
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
         DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<LatLng> locations = new ArrayList<>();
 
+        // Define a projection that specifies which columns from the database are used
         String[] projection;
         if (buttonId == R.id.button_birth_place) {
             projection = new String[] { "BirthCityLat", "BirthCityLong" };
@@ -203,46 +240,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         cursor.close();
         db.close();
+        setMarkerClickListener();
     }
 
-    private void updateMap() {
-        List<LatLng> locations = fetchLocationsFromDatabase();
-        googleMap.clear();
-        for (LatLng location : locations) {
-            googleMap.addMarker(new MarkerOptions().position(location));
-        }
-    }
 
-    private List<LatLng> fetchLocationsFromDatabase() {
-        List<LatLng> locations = new ArrayList<>();
-        DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String[] projection = {
-                latitudeColumn,
-                longitudeColumn
-        };
-
-
-
-        String selection = latitudeColumn + " IS NOT NULL AND " + longitudeColumn + " IS NOT NULL";
-        Cursor cursor = db.query(
-                DatabaseHelper.TABLE_NAME,
-                projection,
-                selection,
-                null,
-                null,
-                null,
-                null
-        );
-
-        while(cursor.moveToNext()) {
-            double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(latitudeColumn));
-            double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(longitudeColumn));
-            locations.add(new LatLng(lat, lng));
-        }
-        cursor.close();
-        db.close();
-        return locations;
-    }
 }

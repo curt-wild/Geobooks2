@@ -61,18 +61,18 @@ public class FilterFragment extends DialogFragment {
 
         radioGroup = view.findViewById(R.id.radioGroup);
         RadioButton radioButtonDefault = view.findViewById(R.id.radioButtonDefault);
-        //This is clicked when the app starts
+        //The default radio button is clicked when the app starts
         radioButtonDefault.performClick();
 
 
-        // Restore the selected RadioButton and Button
+        // Restore the selected RadioButton and Button (after closing the FilterFragment)
         SharedPreferences sharedPref = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         int selectedRadioButtonId = sharedPref.getInt("selectedRadioButtonId", R.id.radioButtonDefault);
         lastClickedButtonId = sharedPref.getInt("lastClickedButtonId", R.id.button_birth_place);
         RadioButton selectedRadioButton = view.findViewById(selectedRadioButtonId);
         selectedRadioButton.setChecked(true);
 
-        // If a button was clicked, set its color
+        // If a button was clicked, set its color, it's either the last clicked button that has a different color or the button "Birth Place" when starting the app
         if (lastClickedButtonId != -1) {
             Button lastClickedButton = view.findViewById(lastClickedButtonId);
             lastClickedButton.setBackgroundColor(Color.parseColor("#ff0000"));
@@ -85,25 +85,13 @@ public class FilterFragment extends DialogFragment {
             lastClickedButtonId = R.id.button_birth_place;
         }
 
-
-        // Slider Filter
-        RangeSlider slider = view.findViewById(R.id.slider);
-        slider.setValueFrom(-800f); // replace with your min year
-        slider.setValueTo(1953f); // replace with your max year
-        slider.setStepSize(1); // This ensures only integers between the min and max can be selected
-        List<Float> initialSliderValues = new ArrayList<>();
-        initialSliderValues.add(-800f); // replace with your min year
-        initialSliderValues.add(1953f); // replace with your max year
-        slider.setValues(initialSliderValues);
-        slider.addOnChangeListener((slider1, value, fromUser) -> mapFragment.setYearRange(slider.getValues().get(0), slider.getValues().get(1)));
-
         
-// Set onClickListeners for your buttons
+// Set onClickListeners for the buttons
         buttonImpCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //set the color of the buttons
                 buttonImpCity.setBackgroundColor(Color.parseColor("#ff0000"));
-
                 buttonBirthPlace.setBackgroundColor(Color.parseColor("#800080"));
                 buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
 
@@ -115,7 +103,7 @@ public class FilterFragment extends DialogFragment {
                     radioButtonDefault.performClick();
                 }
 
-                // Set the filters
+                // Set the filters (method from MapFragment)
                 mapFragment.setFilters("ImpCityLat", "ImpCityLong");
             }
         });
@@ -123,8 +111,8 @@ public class FilterFragment extends DialogFragment {
         buttonBirthPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //set the color of the buttons
                 buttonBirthPlace.setBackgroundColor(Color.parseColor("#ff0000"));
-
                 buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
                 buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
 
@@ -136,7 +124,7 @@ public class FilterFragment extends DialogFragment {
                     radioButtonDefault.performClick();
                 }
 
-                // Set the filters
+                // Set the filters (method from MapFragment)
                 mapFragment.setFilters("BirthCityLat", "BirthCityLong");
             }
         });
@@ -144,8 +132,8 @@ public class FilterFragment extends DialogFragment {
         buttonPubCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //set the color of the buttons
                 buttonPubCity.setBackgroundColor(Color.parseColor("#ff0000"));
-
                 buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
                 buttonBirthPlace.setBackgroundColor(Color.parseColor("#800080"));
 
@@ -157,7 +145,7 @@ public class FilterFragment extends DialogFragment {
                     radioButtonDefault.performClick();
                 }
 
-                // Set the filters
+                // Set the filters (method from MapFragment)
                 mapFragment.setFilters("PubCityLat", "PubCityLong");
             }
         });
@@ -175,6 +163,7 @@ public class FilterFragment extends DialogFragment {
             }
         });
 
+        // Set a listener when the default radio button is clicked
         radioButtonDefault.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,11 +184,12 @@ public class FilterFragment extends DialogFragment {
     }
 
 
+    //Handles the case when the user closes the fragment
     @Override
     public void onPause() {
         super.onPause();
 
-        // Save the selected button
+        // the last clicked button and the selected radio button are saved
         if (radioGroup != null) {
             SharedPreferences sharedPref = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -209,6 +199,7 @@ public class FilterFragment extends DialogFragment {
         }
     }
 
+    //Clears the current selection when the app is closed
     public static void clearPreferences(Context context) {
         SharedPreferences sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();

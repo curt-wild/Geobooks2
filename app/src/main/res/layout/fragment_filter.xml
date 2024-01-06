@@ -6,6 +6,21 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/filterTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filter"
+        android:textStyle="bold"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose a map"
+        android:textStyle="bold"/>
+
     <Button
         android:id="@+id/button_birth_place"
         android:layout_width="match_parent"
@@ -24,13 +39,9 @@
         android:layout_height="wrap_content"
         android:text="Important city in work" />
 
-    <com.google.android.material.slider.RangeSlider
-        android:id="@+id/slider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Choose a genre"

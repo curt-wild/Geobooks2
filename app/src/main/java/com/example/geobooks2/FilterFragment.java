@@ -3,6 +3,7 @@ package com.example.geobooks2;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -61,6 +62,22 @@ public class FilterFragment extends DialogFragment {
 
         radioGroup = view.findViewById(R.id.radioGroup);
         RadioButton radioButtonDefault = view.findViewById(R.id.radioButtonDefault);
+
+        // Set the color of the RadioButton
+        ColorStateList colorStateList = new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_checked}, // unchecked
+                        new int[]{android.R.attr.state_checked}  // checked
+                },
+                new int[]{
+                        Color.BLACK,   // Color when unchecked
+                        Color.parseColor("#776B5D")    // Color when checked
+                }
+        );
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            radioButtonDefault.setButtonTintList(colorStateList);
+        }
+
         //The default radio button is clicked when the app starts
         radioButtonDefault.performClick();
 
@@ -75,13 +92,13 @@ public class FilterFragment extends DialogFragment {
         // If a button was clicked, set its color, it's either the last clicked button that has a different color or the button "Birth Place" when starting the app
         if (lastClickedButtonId != -1) {
             Button lastClickedButton = view.findViewById(lastClickedButtonId);
-            lastClickedButton.setBackgroundColor(Color.parseColor("#ff0000"));
+            lastClickedButton.setBackgroundColor(Color.parseColor("#776B5D"));
         }
         else{
-            buttonBirthPlace.setBackgroundColor(Color.parseColor("#ff0000"));
+            buttonBirthPlace.setBackgroundColor(Color.parseColor("#776B5D"));
 
-            buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
-            buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
+            buttonImpCity.setBackgroundColor(Color.parseColor("#978F87"));
+            buttonPubCity.setBackgroundColor(Color.parseColor("#978F87"));
             lastClickedButtonId = R.id.button_birth_place;
         }
 
@@ -91,9 +108,9 @@ public class FilterFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 //set the color of the buttons
-                buttonImpCity.setBackgroundColor(Color.parseColor("#ff0000"));
-                buttonBirthPlace.setBackgroundColor(Color.parseColor("#800080"));
-                buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
+                buttonImpCity.setBackgroundColor(Color.parseColor("#776B5D"));
+                buttonBirthPlace.setBackgroundColor(Color.parseColor("#978F87"));
+                buttonPubCity.setBackgroundColor(Color.parseColor("#978F87"));
 
                 // Store the ID of the clicked button
                 lastClickedButtonId = R.id.button_imp_city;
@@ -112,9 +129,9 @@ public class FilterFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 //set the color of the buttons
-                buttonBirthPlace.setBackgroundColor(Color.parseColor("#ff0000"));
-                buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
-                buttonPubCity.setBackgroundColor(Color.parseColor("#800080"));
+                buttonBirthPlace.setBackgroundColor(Color.parseColor("#776B5D"));
+                buttonImpCity.setBackgroundColor(Color.parseColor("#978F87"));
+                buttonPubCity.setBackgroundColor(Color.parseColor("#978F87"));
 
                 // Store the ID of the clicked button
                 lastClickedButtonId = R.id.button_birth_place;
@@ -133,9 +150,9 @@ public class FilterFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 //set the color of the buttons
-                buttonPubCity.setBackgroundColor(Color.parseColor("#ff0000"));
-                buttonImpCity.setBackgroundColor(Color.parseColor("#800080"));
-                buttonBirthPlace.setBackgroundColor(Color.parseColor("#800080"));
+                buttonPubCity.setBackgroundColor(Color.parseColor("#776B5D"));
+                buttonImpCity.setBackgroundColor(Color.parseColor("#978F87"));
+                buttonBirthPlace.setBackgroundColor(Color.parseColor("#978F87"));
 
                 // Store the ID of the clicked button
                 lastClickedButtonId = R.id.button_pub_city;
@@ -160,6 +177,21 @@ public class FilterFragment extends DialogFragment {
 
                 // Update the map based on the selected genre and the last clicked button
                 mapFragment.setGenre(genre, lastClickedButtonId);
+
+                // Change the color of the checked RadioButton
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][]{
+                                new int[]{-android.R.attr.state_checked}, // unchecked
+                                new int[]{android.R.attr.state_checked}  // checked
+                        },
+                        new int[]{
+                                Color.BLACK,   // Color when unchecked
+                                Color.parseColor("#776B5D")    // Color when checked
+                        }
+                );
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    radioButton.setButtonTintList(colorStateList);
+                }
             }
         });
 
@@ -176,6 +208,7 @@ public class FilterFragment extends DialogFragment {
                 } else if (lastClickedButtonId == R.id.button_imp_city) {
                     mapFragment.setFilters("ImpCityLat", "ImpCityLong");
                 }
+
             }
         });
 

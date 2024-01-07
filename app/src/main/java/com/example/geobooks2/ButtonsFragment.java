@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 public class ButtonsFragment extends Fragment {
@@ -27,8 +29,9 @@ public class ButtonsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_buttons, container, false);
 
         // Find the buttons in the layout
-        Button aboutButton = view.findViewById(R.id.about_button);
-        Button filterButton = view.findViewById(R.id.filter_button);
+        ImageButton aboutButton = view.findViewById(R.id.about_button);
+        ImageButton filterButton = view.findViewById(R.id.filter_button);
+
 
         // Set click listeners for the buttons
         aboutButton.setOnClickListener(new View.OnClickListener() {

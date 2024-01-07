@@ -5,5 +5,6 @@
     <color name="blue">#ADC9D4</color>
     <color name="brown">#776B5D</color>
     <color name="cream">#EBE4D5</color>
-    <color name="special_white">#F3EEEA</color>
+    <color name="special_white">#F8F8F8</color>
+    <color name="beige">#978F87</color>
 </resources>

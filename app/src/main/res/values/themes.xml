@@ -2,6 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Geobooks2" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
+        <item name="android:fontFamily">@font/type</item>
+        <item name="android:windowBackground">@color/special_white</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 

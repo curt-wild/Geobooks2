@@ -11,21 +11,25 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <Button
+        <ImageButton
             android:id="@+id/about_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"
-            android:background="@drawable/circular_button"
-            android:text="A"/>
+            android:background="@android:color/transparent"
+            android:src="@drawable/aboutbutton"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/filter_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"
-            android:background="@drawable/circular_button"
-            android:text="F" />
+            android:background="@android:color/transparent"
+            android:src="@drawable/filterbutton"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"/>
 
     </LinearLayout>
 

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -92,7 +93,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         googleMap.setMaxZoomPreference(10.0f);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
-        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.map_style));
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.basemap));
 
         updateMap();
 
@@ -131,7 +132,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         List<LatLng> locations = fetchLocationsFromDatabase();
         googleMap.clear();
         for (LatLng location : locations) {
-            googleMap.addMarker(new MarkerOptions().position(location));
+            googleMap.addMarker(new MarkerOptions().position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
         }
         setMarkerClickListener();
     }
@@ -232,7 +233,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 LatLng location = new LatLng(lat, lng);
 
                 // Add a marker to the map at the retrieved location
-                googleMap.addMarker(new MarkerOptions().position(location));
+                googleMap.addMarker(new MarkerOptions().position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
 
                 /*
                 // Move the camera to the retrieved location
@@ -246,7 +247,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         cursor.close();
         db.close();
         setMarkerClickListener();
+
     }
+
+
 
 
 }

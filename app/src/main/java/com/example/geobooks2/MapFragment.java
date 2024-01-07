@@ -57,6 +57,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Reset isMapCentered to false to center the map on the user's location every time the fragment is created
+        isMapCentered = false;
+
 
         // initialize location permission request
         locationPermissionRequest = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
@@ -86,6 +89,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         String[] PERMISSIONS = {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         locationPermissionRequest.launch(PERMISSIONS);
 
+
+        googleMap.setMaxZoomPreference(10.0f);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.map_style));
 
@@ -106,7 +111,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 // Logic to handle location object
                                 LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(5.0f));
                                 isMapCentered = true;
                             }
                         }

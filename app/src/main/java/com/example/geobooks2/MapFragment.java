@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -129,12 +130,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
     private void updateMap() {
+        /*
         List<LatLng> locations = fetchLocationsFromDatabase();
+
         googleMap.clear();
         for (LatLng location : locations) {
             googleMap.addMarker(new MarkerOptions().position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
         }
         setMarkerClickListener();
+         */
+
+        List<LatLng> locations = fetchLocationsFromDatabase();
+        googleMap.clear();
+        HashMap<LatLng, Integer> locationCountMap = new HashMap<>();
+        for (LatLng location : locations) {
+            if (locationCountMap.containsKey(location)) {
+                locationCountMap.put(location, locationCountMap.get(location) + 1);
+            } else {
+                locationCountMap.put(location, 1);
+            }
+        }
+        for (Map.Entry<LatLng, Integer> entry : locationCountMap.entrySet()) {
+            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title("CLick to see all " + entry.getValue() + " book(s)").icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
+        }
+        setInfoWindowClickListener();
+
     }
 
     private List<LatLng> fetchLocationsFromDatabase() {
@@ -174,6 +194,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                marker.showInfoWindow(); // Show the title of the marker, which is the count of books in that location
+                /*
                 LatLng position = marker.getPosition();
                 //Create an intent to start the BookListActivity
                 Intent intent = new Intent(getActivity(), BookListActivity.class);
@@ -183,10 +205,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 intent.putExtra("latColumn", latitudeColumn);
                 intent.putExtra("lngColumn", longitudeColumn);
                 startActivity(intent);
+
+                     */
                 return false;
+
             }
         });
     }
+
+    //Handle InfoWindow click events
+    private void setInfoWindowClickListener() {
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                LatLng position = marker.getPosition();
+                //Create an intent to start the BookListActivity
+                Intent intent = new Intent(getActivity(), BookListActivity.class);
+                //Pass the lat, lng and name of the columns of the clicked marker to the BookListActivity
+                intent.putExtra("lat", position.latitude);
+                intent.putExtra("lng", position.longitude);
+                intent.putExtra("latColumn", latitudeColumn);
+                intent.putExtra("lngColumn", longitudeColumn);
+                startActivity(intent);
+            }
+        });
+    }
+
 
     // Update the map based on the selected genre and the last clicked button
     public void setGenre(String genre, int buttonId) {
@@ -246,8 +290,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         cursor.close();
         db.close();
-        setMarkerClickListener();
-
+        setInfoWindowClickListener();
     }
 
 

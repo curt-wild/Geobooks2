@@ -13,10 +13,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -96,7 +98,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.basemap));
 
-        updateMap();
+        updateMap(R.id.button_birth_place);
 
 
         // Add this code to center the map on the user's location when the permission is granted
@@ -124,23 +126,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void setFilters(String latitudeColumn, String longitudeColumn) {
         this.latitudeColumn = latitudeColumn;
         this.longitudeColumn = longitudeColumn;
-        updateMap();
+        int buttonId;
+        if (latitudeColumn.equals("BirthCityLat") && longitudeColumn.equals("BirthCityLong")) {
+            buttonId = R.id.button_birth_place;
+        } else if (latitudeColumn.equals("PubCityLat") && longitudeColumn.equals("PubCityLong")) {
+            buttonId = R.id.button_pub_city;
+        } else if (latitudeColumn.equals("ImpCityLat") && longitudeColumn.equals("ImpCityLong")) {
+            buttonId = R.id.button_imp_city;
+        } else {
+            throw new IllegalArgumentException("Invalid latitude or longitude column: " + latitudeColumn + ", " + longitudeColumn);
+        }
+
+        updateMap(buttonId);
 
     }
 
 
-    private void updateMap() {
-        /*
-        List<LatLng> locations = fetchLocationsFromDatabase();
-
-        googleMap.clear();
-        for (LatLng location : locations) {
-            googleMap.addMarker(new MarkerOptions().position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
-        }
-        setMarkerClickListener();
-         */
-
-        List<LatLng> locations = fetchLocationsFromDatabase();
+    private void updateMap(int buttonId) {
+        List<LatLng> locations = fetchLocationsFromDatabase(buttonId);
         googleMap.clear();
         HashMap<LatLng, Integer> locationCountMap = new HashMap<>();
         for (LatLng location : locations) {
@@ -151,24 +154,64 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
         for (Map.Entry<LatLng, Integer> entry : locationCountMap.entrySet()) {
-            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title("CLick to see all " + entry.getValue() + " book(s)").icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
+            // Choose the marker icon based on the buttonId
+            int markerDrawableId;
+            if (buttonId == R.id.button_birth_place) {
+                markerDrawableId = R.drawable.birth_city_marker;
+            } else if (buttonId == R.id.button_pub_city) {
+                markerDrawableId = R.drawable.pub_city_marker;
+            } else if (buttonId == R.id.button_imp_city) {
+                markerDrawableId = R.drawable.imp_city_marker;
+            } else {
+                throw new IllegalArgumentException("Invalid button id: " + buttonId);
+            }
+
+            // Create a BitmapDescriptor for the marker icon
+            BitmapDescriptor markerIcon = BitmapDescriptorFactory.fromResource(markerDrawableId);
+
+            // Add a marker on the map at the location with the marker icon and the book count as the title
+            googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    return null; // Use default info window background
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+                    // Inflate custom info window layout
+                    View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+
+                    // Find and set the book count text
+                    TextView bookCountTextView = infoWindow.findViewById(R.id.book_count_text_view);
+                    bookCountTextView.setText(marker.getTitle());
+
+                    return infoWindow;
+                }
+            });
+            googleMap.addMarker(new MarkerOptions().position(entry.getKey()).title("Book count: " + entry.getValue()).icon(markerIcon));
         }
         setInfoWindowClickListener();
 
     }
 
-    private List<LatLng> fetchLocationsFromDatabase() {
+    private List<LatLng> fetchLocationsFromDatabase(int buttonId) {
         List<LatLng> locations = new ArrayList<>();
         DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] projection = {
-                latitudeColumn,
-                longitudeColumn
-        };
+        String[] projection;
+        if (buttonId == R.id.button_birth_place) {
+            projection = new String[] { "BirthCityLat", "BirthCityLong" };
+        } else if (buttonId == R.id.button_pub_city) {
+            projection = new String[] { "PubCityLat", "PubCityLong" };
+        } else if (buttonId == R.id.button_imp_city) {
+            projection = new String[] { "ImpCityLat", "ImpCityLong" };
+        } else {
+            throw new IllegalArgumentException("Invalid button id: " + buttonId);
+        }
 
         // Database query: WHERE "latitudeColumn" IS NOT NULL AND "longitudeColumn" IS NOT NULL
-        String selection = latitudeColumn + " IS NOT NULL AND " + longitudeColumn + " IS NOT NULL";
+        String selection = projection[0] + " IS NOT NULL AND " + projection[1] + " IS NOT NULL";
         Cursor cursor = db.query(
                 DatabaseHelper.TABLE_NAME,
                 projection,
@@ -180,8 +223,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         );
 
         while(cursor.moveToNext()) {
-            double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(latitudeColumn));
-            double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(longitudeColumn));
+            double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[0]));
+            double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[1]));
             locations.add(new LatLng(lat, lng));
         }
         cursor.close();
@@ -195,23 +238,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 marker.showInfoWindow(); // Show the title of the marker, which is the count of books in that location
-                /*
-                LatLng position = marker.getPosition();
-                //Create an intent to start the BookListActivity
-                Intent intent = new Intent(getActivity(), BookListActivity.class);
-                //Pass the lat, lng and name of the columns of the clicked marker to the BookListActivity
-                intent.putExtra("lat", position.latitude);
-                intent.putExtra("lng", position.longitude);
-                intent.putExtra("latColumn", latitudeColumn);
-                intent.putExtra("lngColumn", longitudeColumn);
-                startActivity(intent);
-
-                     */
-                return false;
+                return false;//
 
             }
         });
     }
+
+
 
     //Handle InfoWindow click events
     private void setInfoWindowClickListener() {
@@ -272,13 +305,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[0]));
                 double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[1]));
 
-
                 // Create a LatLng object with the retrieved lat and lng
                 LatLng location = new LatLng(lat, lng);
 
-                // Add a marker to the map at the retrieved location
-                googleMap.addMarker(new MarkerOptions().position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.citymarker)));
+                // Choose the marker icon based on the buttonId
+                int markerDrawableId;
+                if (buttonId == R.id.button_birth_place) {
+                    markerDrawableId = R.drawable.birth_city_marker;
+                } else if (buttonId == R.id.button_pub_city) {
+                    markerDrawableId = R.drawable.pub_city_marker;
+                } else if (buttonId == R.id.button_imp_city) {
+                    markerDrawableId = R.drawable.imp_city_marker;
+                } else {
+                    throw new IllegalArgumentException("Invalid button id: " + buttonId);
+                }
 
+                // Create a BitmapDescriptor for the marker icon
+                BitmapDescriptor markerIcon = BitmapDescriptorFactory.fromResource(markerDrawableId);
+
+                // Add a marker on the map at the location with the marker icon
+                googleMap.addMarker(new MarkerOptions().position(location).icon(markerIcon));
                 /*
                 // Move the camera to the retrieved location
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));

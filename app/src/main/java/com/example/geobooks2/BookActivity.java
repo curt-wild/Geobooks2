@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,7 +21,8 @@ public class BookActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book);
 
-        String bookTitle = getIntent().getStringExtra("BookTitle");
+        String bookTitleWithAuthor = getIntent().getStringExtra("BookTitle");
+        String bookTitle = bookTitleWithAuthor.split(" by ")[0];
 
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -65,10 +67,10 @@ public class BookActivity extends AppCompatActivity {
             Button htmlReaderButton = findViewById(R.id.htmlReaderButton);
 
             titleTextView.setText(bookTitle);
-            authorTextView.setText(author);
-            yearTextView.setText(String.valueOf(publicationYear));
-            genreTextView.setText(genre);
-            synapseTextView.setText(synapse);
+            authorTextView.setText(Html.fromHtml("<b>" + "Author: " + "</b>" + author));
+            yearTextView.setText(Html.fromHtml("<b>" + "Year: " + "</b>" + publicationYear));
+            genreTextView.setText(Html.fromHtml("<b>" + "Genre: " + "</b>" + genre));
+            synapseTextView.setText(Html.fromHtml("<b>" + "Synapse: " + "</b>" + synapse));
 
             pgPageButton.setOnClickListener(new View.OnClickListener() {
                 @Override

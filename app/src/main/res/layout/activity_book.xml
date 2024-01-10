@@ -10,42 +10,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
+        android:paddingBottom="16dp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/authorTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:paddingBottom="16dp"/>
 
     <TextView
         android:id="@+id/yearTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:paddingBottom="16dp"/>
 
     <TextView
         android:id="@+id/genreTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:paddingBottom="16dp"/>
 
     <TextView
         android:id="@+id/synapseTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/pgPageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View PG Page" />
+        android:textSize="18sp"
+        android:paddingBottom="16dp"/>
 
     <Button
         android:id="@+id/htmlReaderButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View HTML Reader" />
+        android:backgroundTint="@color/beige"
+        android:text="Read book" />
+
+    <Button
+        android:id="@+id/pgPageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/beige"
+        android:text="View book in Project Gutenberg Page" />
+
 
 </LinearLayout>

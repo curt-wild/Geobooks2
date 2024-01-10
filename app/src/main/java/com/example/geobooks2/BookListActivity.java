@@ -57,28 +57,31 @@ public class BookListActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
-                "BookTitle"
+            "BookTitle",
+            "Author" // Assuming the column for author is named "Author"
         };
 
         String selection = latColumn + " = ? AND " + lngColumn + " = ?";
         String[] selectionArgs = {
-                String.valueOf(lat),
-                String.valueOf(lng)
+            String.valueOf(lat),
+            String.valueOf(lng)
         };
 
         Cursor cursor = db.query(
-                DatabaseHelper.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
+            DatabaseHelper.TABLE_NAME,
+            projection,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
         );
 
         while(cursor.moveToNext()) {
-            String bookTitle = cursor.getString(cursor.getColumnIndexOrThrow("BookTitle"));
-            bookTitles.add(bookTitle);
+        String bookTitle = cursor.getString(cursor.getColumnIndexOrThrow("BookTitle"));
+        String author = cursor.getString(cursor.getColumnIndexOrThrow("Author"));
+        String bookInfo = bookTitle + " by " + author;
+        bookTitles.add(bookInfo);
         }
         cursor.close();
         return bookTitles;

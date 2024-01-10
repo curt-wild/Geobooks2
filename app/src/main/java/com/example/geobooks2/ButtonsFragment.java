@@ -10,6 +10,11 @@ import android.widget.ImageButton;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+/**
+ * This class creates the fragment that contains the buttons for About and Filter.
+ * It is called from the MapFragment class.
+ */
+
 public class ButtonsFragment extends Fragment {
 
     private MapFragment mapFragment; // Reference to MapFragment

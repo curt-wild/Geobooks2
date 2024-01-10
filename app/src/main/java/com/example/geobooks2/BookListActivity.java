@@ -16,6 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class creates the activity that displays the list of books for a given city.
+ * It is called from the MapActivity class.
+ */
+
 public class BookListActivity extends AppCompatActivity {
 
     @Override
@@ -58,7 +63,7 @@ public class BookListActivity extends AppCompatActivity {
 
         String[] projection = {
             "BookTitle",
-            "Author" // Assuming the column for author is named "Author"
+            "Author"
         };
 
         String selection = latColumn + " = ? AND " + lngColumn + " = ?";

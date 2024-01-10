@@ -14,7 +14,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * This class creates the activity that displays the book details.
+ * It is called from the BookAdapter class.
+ */
+
 public class BookActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

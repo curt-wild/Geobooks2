@@ -10,8 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:paddingBottom="16dp"
-        android:textStyle="bold" />
+        android:paddingTop="20dp"
+        android:paddingBottom="30dp"
+        android:textStyle="bold"
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/authorTextView"
@@ -39,12 +41,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:paddingBottom="16dp"/>
+        android:paddingBottom="30dp"/>
 
     <Button
         android:id="@+id/htmlReaderButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:backgroundTint="@color/beige"
         android:text="Read book" />
 
@@ -52,8 +55,9 @@
         android:id="@+id/pgPageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:backgroundTint="@color/beige"
-        android:text="View book in Project Gutenberg Page" />
+        android:text="Project Gutenberg page" />
 
 
 </LinearLayout>

@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * This class creates the database helper.
+ * It is called from the MapFragment class.
+ */
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "GeobooksDB.db";
     public static final String TABLE_NAME = "GeobooksDb";

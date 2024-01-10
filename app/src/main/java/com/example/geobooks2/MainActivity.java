@@ -6,6 +6,11 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * This class creates the activity that displays the map.
+ * It is called from the MainActivity class.
+ */
+
 public class MainActivity extends AppCompatActivity {
     MapFragment mapFragment = new MapFragment();
     FilterFragment filterFragment;
@@ -36,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
                 .add(R.id.fragment_container, buttonsFragment, "BUTTONS_FRAGMENT")
                 .commit();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FilterFragment.clearPreferences(this);
     }
 
 }

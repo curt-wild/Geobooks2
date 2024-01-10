@@ -3,7 +3,6 @@ package com.example.geobooks2;
 import android.app.Dialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import android.app.AlertDialog;
@@ -13,7 +12,10 @@ import android.widget.TextView;
 import android.graphics.Color;
 import android.view.Gravity;
 
-import kotlin.reflect.KType;
+/**
+ * This class creates a custom dialog fragment to display the about text.
+ * It is called from the menu in the main activity.
+ */
 
 
 public class AboutDialogFragment extends DialogFragment {
@@ -43,7 +45,7 @@ public class AboutDialogFragment extends DialogFragment {
         TextView title = new TextView(getActivity());
         title.setText("About");
         title.setBackgroundColor(Color.parseColor("#F8F8F8"));
-        title.setPadding(10, 10, 10, 10);
+        title.setPadding(10, 30, 10, 10);
         title.setGravity(Gravity.CENTER);
         title.setTypeface(customFont, Typeface.BOLD);
         title.setTextColor(Color.BLACK);

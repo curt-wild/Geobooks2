@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +20,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,6 +38,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * This class creates the fragment that contains the map.
+ * It is called from the MainActivity class.
+ */
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap googleMap;
@@ -79,8 +80,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-
-
         return view;
     }
 
@@ -93,7 +92,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         String[] PERMISSIONS = {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         locationPermissionRequest.launch(PERMISSIONS);
 
-
         googleMap.setMaxZoomPreference(10.0f);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.basemap));
@@ -101,7 +99,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         updateMap(R.id.button_birth_place);
 
 
-        // Add this code to center the map on the user's location when the permission is granted
+        // center the map on the user's location when the permission is granted
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);
@@ -126,6 +124,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void setFilters(String latitudeColumn, String longitudeColumn) {
         this.latitudeColumn = latitudeColumn;
         this.longitudeColumn = longitudeColumn;
+
+        //set buttonId to the currently selected button
         int buttonId;
         if (latitudeColumn.equals("BirthCityLat") && longitudeColumn.equals("BirthCityLong")) {
             buttonId = R.id.button_birth_place;
@@ -145,6 +145,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void updateMap(int buttonId) {
         List<LatLng> locations = fetchLocationsFromDatabase(buttonId);
         googleMap.clear();
+
+        // Create a HashMap to store the locations and their counts
         HashMap<LatLng, Integer> locationCountMap = new HashMap<>();
         for (LatLng location : locations) {
             if (locationCountMap.containsKey(location)) {
@@ -153,6 +155,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 locationCountMap.put(location, 1);
             }
         }
+
+        //change the marker icon based on the buttonId
         for (Map.Entry<LatLng, Integer> entry : locationCountMap.entrySet()) {
             // Choose the marker icon based on the buttonId
             int markerDrawableId;
@@ -168,6 +172,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             // Create a BitmapDescriptor for the marker icon
             BitmapDescriptor markerIcon = BitmapDescriptorFactory.fromResource(markerDrawableId);
+
+
 
             // Add a marker on the map at the location with the marker icon and the book count as the title
             googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -194,11 +200,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+
     private List<LatLng> fetchLocationsFromDatabase(int buttonId) {
         List<LatLng> locations = new ArrayList<>();
         DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+        // Define a projection that specifies which columns from the database are used
         String[] projection;
         if (buttonId == R.id.button_birth_place) {
             projection = new String[] { "BirthCityLat", "BirthCityLong" };
@@ -232,19 +240,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return locations;
     }
 
-    //Handle marker click events
-    private void setMarkerClickListener() {
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                marker.showInfoWindow(); // Show the title of the marker, which is the count of books in that location
-                return false;//
-
-            }
-        });
-    }
-
-
 
     //Handle InfoWindow click events
     private void setInfoWindowClickListener() {
@@ -269,16 +264,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void setGenre(String genre, int buttonId) {
         DatabaseHelper dbHelper = new DatabaseHelper(getActivity());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        List<LatLng> locations = new ArrayList<>();
 
-        // Define a projection that specifies which columns from the database are used
+        // Define markerIcon and a projection that specifies which columns from the database are used
+        int markerDrawableId;
         String[] projection;
         if (buttonId == R.id.button_birth_place) {
-            projection = new String[] { "BirthCityLat", "BirthCityLong" };
+            projection = new String[] { "BirthCityLat", "BirthCityLong", "COUNT(*) AS BookCount" };
+            markerDrawableId = R.drawable.birth_city_marker;
         } else if (buttonId == R.id.button_pub_city) {
-            projection = new String[] { "PubCityLat", "PubCityLong" };
+            projection = new String[] { "PubCityLat", "PubCityLong", "COUNT(*) AS BookCount" };
+            markerDrawableId = R.drawable.pub_city_marker;
         } else if (buttonId == R.id.button_imp_city) {
-            projection = new String[] { "ImpCityLat", "ImpCityLong" };
+            projection = new String[] { "ImpCityLat", "ImpCityLong", "COUNT(*) AS BookCount" };
+            markerDrawableId = R.drawable.imp_city_marker;
         } else {
             throw new IllegalArgumentException("Invalid button id: " + buttonId);
         }
@@ -292,7 +290,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 projection,                   // The array of columns to return (pass null to get all)
                 selection,                    // The columns for the WHERE clause
                 selectionArgs,                // The values for the WHERE clause
-                null,                         // Don't group the rows
+                projection[0] + ", " + projection[1], // Group by latitude and longitude
                 null,                         // Don't filter by row groups
                 null                          // The sort order
         );
@@ -304,32 +302,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             do {
                 double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[0]));
                 double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(projection[1]));
+                int bookCount = cursor.getInt(cursor.getColumnIndexOrThrow("BookCount"));
+
 
                 // Create a LatLng object with the retrieved lat and lng
                 LatLng location = new LatLng(lat, lng);
-
-                // Choose the marker icon based on the buttonId
-                int markerDrawableId;
-                if (buttonId == R.id.button_birth_place) {
-                    markerDrawableId = R.drawable.birth_city_marker;
-                } else if (buttonId == R.id.button_pub_city) {
-                    markerDrawableId = R.drawable.pub_city_marker;
-                } else if (buttonId == R.id.button_imp_city) {
-                    markerDrawableId = R.drawable.imp_city_marker;
-                } else {
-                    throw new IllegalArgumentException("Invalid button id: " + buttonId);
-                }
 
                 // Create a BitmapDescriptor for the marker icon
                 BitmapDescriptor markerIcon = BitmapDescriptorFactory.fromResource(markerDrawableId);
 
                 // Add a marker on the map at the location with the marker icon
-                googleMap.addMarker(new MarkerOptions().position(location).icon(markerIcon));
-                /*
-                // Move the camera to the retrieved location
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-
-                 */
+                googleMap.addMarker(new MarkerOptions().position(location).title("Book count: " + bookCount).icon(markerIcon));
 
             } while (cursor.moveToNext());
         }

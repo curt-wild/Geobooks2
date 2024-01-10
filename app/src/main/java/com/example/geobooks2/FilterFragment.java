@@ -24,6 +24,11 @@ import com.google.android.material.slider.RangeSlider;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class creates the fragment that contains the filter options.
+ * It is called from the MapFragment class.
+ */
+
 public class FilterFragment extends DialogFragment {
     private MapFragment mapFragment;
     private int lastClickedButtonId = -1;
@@ -63,21 +68,6 @@ public class FilterFragment extends DialogFragment {
         radioGroup = view.findViewById(R.id.radioGroup);
         RadioButton radioButtonDefault = view.findViewById(R.id.radioButtonDefault);
 
-        // Set the color of the RadioButton
-        ColorStateList colorStateList = new ColorStateList(
-                new int[][]{
-                        new int[]{-android.R.attr.state_checked}, // unchecked
-                        new int[]{android.R.attr.state_checked}  // checked
-                },
-                new int[]{
-                        Color.BLACK,   // Color when unchecked
-                        Color.parseColor("#776B5D")    // Color when checked
-                }
-        );
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            radioButtonDefault.setButtonTintList(colorStateList);
-        }
-
         //The default radio button is clicked when the app starts
         radioButtonDefault.performClick();
 
@@ -89,6 +79,8 @@ public class FilterFragment extends DialogFragment {
         RadioButton selectedRadioButton = view.findViewById(selectedRadioButtonId);
         selectedRadioButton.setChecked(true);
 
+        colorRadioButtons(view, selectedRadioButton);
+
         // If a button was clicked, set its color, it's either the last clicked button that has a different color or the button "Birth Place" when starting the app
         if (lastClickedButtonId != -1) {
             Button lastClickedButton = view.findViewById(lastClickedButtonId);
@@ -96,13 +88,12 @@ public class FilterFragment extends DialogFragment {
         }
         else{
             buttonBirthPlace.setBackgroundColor(Color.parseColor("#776B5D"));
-
             buttonImpCity.setBackgroundColor(Color.parseColor("#978F87"));
             buttonPubCity.setBackgroundColor(Color.parseColor("#978F87"));
             lastClickedButtonId = R.id.button_birth_place;
         }
 
-        
+
 // Set onClickListeners for the buttons
         buttonImpCity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,20 +169,7 @@ public class FilterFragment extends DialogFragment {
                 // Update the map based on the selected genre and the last clicked button
                 mapFragment.setGenre(genre, lastClickedButtonId);
 
-                // Change the color of the checked RadioButton
-                ColorStateList colorStateList = new ColorStateList(
-                        new int[][]{
-                                new int[]{-android.R.attr.state_checked}, // unchecked
-                                new int[]{android.R.attr.state_checked}  // checked
-                        },
-                        new int[]{
-                                Color.BLACK,   // Color when unchecked
-                                Color.parseColor("#776B5D")    // Color when checked
-                        }
-                );
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    radioButton.setButtonTintList(colorStateList);
-                }
+                colorRadioButtons(view, radioButton);
             }
         });
 
@@ -216,6 +194,22 @@ public class FilterFragment extends DialogFragment {
         return builder.create();
     }
 
+    private void colorRadioButtons(View view, RadioButton selectedRadioButton) {
+        // Set the color of the RadioButton
+        ColorStateList colorStateList = new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_checked}, // unchecked
+                        new int[]{android.R.attr.state_checked}  // checked
+                },
+                new int[]{
+                        Color.BLACK,   // Color when unchecked
+                        Color.parseColor("#776B5D")    // Color when checked
+                }
+        );
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            selectedRadioButton.setButtonTintList(colorStateList);
+        }
+    }
 
     //Handles the case when the user closes the fragment
     @Override
@@ -239,5 +233,7 @@ public class FilterFragment extends DialogFragment {
         editor.clear();
         editor.apply();
     }
+
+
 
 }

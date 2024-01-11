@@ -7,12 +7,13 @@
     android:radius="8dp">
 
     <TextView
-        android:id="@+id/book_count_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:fontFamily="@font/type"
-        android:padding="4dp"/>
+            android:id="@+id/book_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/blue"
+            android:textSize="16sp"
+            android:fontFamily="@font/type"
+            android:padding="4dp"
+            android:textStyle="italic" />
 
 </androidx.cardview.widget.CardView>

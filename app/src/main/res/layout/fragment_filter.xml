@@ -1,121 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/rounded_corners">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/filterTitle"
+    <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/rounded_corners">
+
+        <TextView
+            android:id="@+id/filterTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Filter"
+            android:textStyle="bold"
+            android:textSize="20dp"/>
+
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose a map"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"/>
+
+        <Button
+            android:id="@+id/button_birth_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/beige"
+            android:text="Birth city of the author"
+            android:drawableRight="@drawable/birth_city_marker"/>
+
+        <Button
+            android:id="@+id/button_pub_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/beige"
+            android:text="Publication City"
+            android:drawableRight="@drawable/pub_city_marker" />
+
+        <Button
+            android:id="@+id/button_imp_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/beige"
+            android:text="Important city in the book"
+            android:drawableRight="@drawable/imp_city_marker"/>
+
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose a genre"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioButtonDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All genres"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adventure"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drama"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fiction"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Non-Fiction"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Novel"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Poetry"
+                android:buttonTint="@color/brown"/>
+
+            <RadioButton
+                android:id="@+id/radioButton7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thriller"
+                android:buttonTint="@color/brown"/>
+
+        </RadioGroup>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Filter"
-        android:textStyle="bold"
-        android:textSize="20dp"/>
+        android:layout_gravity="end|top"
+        android:src="@drawable/baseline_close_24"
+        android:padding="16dp" />
 
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Choose a map"
-        android:textStyle="bold"
-        android:layout_marginTop="30dp"/>
-
-    <Button
-        android:id="@+id/button_birth_place"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/beige"
-        android:text="Birth city of the author"/>
-
-    <Button
-        android:id="@+id/button_pub_city"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/beige"
-        android:text="Publication City" />
-
-    <Button
-        android:id="@+id/button_imp_city"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/beige"
-        android:text="Important city in the book" />
-
- 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Choose a genre"
-        android:textStyle="bold"
-        android:layout_marginTop="30dp"/>
-
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RadioButton
-            android:id="@+id/radioButtonDefault"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="All genres"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Adventure"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Drama"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fiction"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Non-Fiction"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Novel"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Poetry"
-            android:buttonTint="@color/brown"/>
-
-        <RadioButton
-            android:id="@+id/radioButton7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thriller"
-            android:buttonTint="@color/brown"/>
-
-    </RadioGroup>
-
-</LinearLayout>
+</FrameLayout>

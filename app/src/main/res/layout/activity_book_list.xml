@@ -15,11 +15,23 @@
         android:padding="10dp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="18dp"
+        android:text="Select a book:"
+        android:textStyle="bold"
+        android:layout_below="@+id/textView"
+        android:paddingLeft="15dp"
+        android:paddingBottom="5dp"/>
+
     <View
         android:id="@+id/spacer"
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:layout_below="@id/textView" />
+        android:layout_below="@id/text" />
 
     <ListView
         android:id="@+id/listView"

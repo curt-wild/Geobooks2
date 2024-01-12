@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_corners"
-    android:radius="8dp">
+    android:background="@drawable/popup_button">
 
     <TextView
             android:id="@+id/book_count_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/blue"
+            android:textColor="@color/black"
             android:textSize="16sp"
-            android:fontFamily="@font/type"
-            android:padding="4dp"
-            android:textStyle="italic" />
+            android:fontFamily="@font/type"/>
 
-</androidx.cardview.widget.CardView>
+</LinearLayout>

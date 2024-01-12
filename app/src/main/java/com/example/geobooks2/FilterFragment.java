@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -50,7 +51,6 @@ public class FilterFragment extends DialogFragment {
         return fragment;
     }
 
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -59,6 +59,17 @@ public class FilterFragment extends DialogFragment {
         // Inflate the layout for this fragment
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_filter, null);
+
+        // Get the ImageView from the custom layout
+        ImageView closeButton = view.findViewById(R.id.closeButton);
+
+        // Set an OnClickListener on the ImageView
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss(); // Close the dialog
+            }
+        });
 
         // Button Filters
         Button buttonBirthPlace = view.findViewById(R.id.button_birth_place);
@@ -70,7 +81,6 @@ public class FilterFragment extends DialogFragment {
 
         //The default radio button is clicked when the app starts
         radioButtonDefault.performClick();
-
 
         // Restore the selected RadioButton and Button (after closing the FilterFragment)
         SharedPreferences sharedPref = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -94,7 +104,7 @@ public class FilterFragment extends DialogFragment {
         }
 
 
-// Set onClickListeners for the buttons
+        // Set onClickListeners for the buttons
         buttonImpCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +168,7 @@ public class FilterFragment extends DialogFragment {
             }
         });
 
-// Set a listener to be invoked when the checked radio button changes
+        // Set a listener to be invoked when the checked radio button changes
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -167,7 +177,7 @@ public class FilterFragment extends DialogFragment {
                 String genre = radioButton.getText().toString();
 
                 // Update the map based on the selected genre and the last clicked button
-                mapFragment.setGenre(genre, lastClickedButtonId);
+                mapFragment.updateMap(genre, lastClickedButtonId);
 
                 colorRadioButtons(view, radioButton);
             }
@@ -233,7 +243,5 @@ public class FilterFragment extends DialogFragment {
         editor.clear();
         editor.apply();
     }
-
-
 
 }
